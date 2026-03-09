@@ -5,37 +5,37 @@ Track your Spotify play history with a medallion-architecture SQLite database, C
 ## Architecture
 
 ```
-Spotify API  -->  collector.py  -->  [Bronze: raw_plays]
-                                          |
-                                    pipeline.py
-                                          |
-                             [Silver: plays, tracks, artists]
-                                          |
-                             [Gold: artist_summary, album_summary, daily_summary]
-                                          |
-                            stats.py (CLI)  |  dashboard.py (Web)
+EC2 (always-on):
+  Spotify API  -->  collector.py (every 15 min)  -->  [Bronze: raw_plays]
+                                                            |
+                                                      pipeline.py
+                                                            |
+                                               [Silver: plays, tracks, artists]
+                                                            |
+                                               [Gold: summaries]  -->  spotify.db
+
+Local Mac (on-demand):
+  scp spotify.db  -->  stats.py (CLI)
+                  -->  dashboard.py (Streamlit)
 ```
 
-## Quick Start
+## Quick Start (Local)
 
 ```bash
-# Clone
 git clone https://github.com/adriansotomora/spotify-library.git
 cd spotify-library
 
-# Setup
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# Configure
 cp .env.example .env
 # Edit .env with your Spotify app credentials
 
 # First-time auth (opens browser)
 python src/auth.py
 
-# Collect plays
+# Collect plays manually
 python src/collector.py
 
 # View stats
@@ -46,12 +46,11 @@ python src/stats.py history
 python src/stats.py skipped
 python src/stats.py track "Song Name"
 python src/stats.py artist "Artist Name"
-
-# Dashboard
-streamlit run src/dashboard.py
 ```
 
-## EC2 Deployment
+## EC2 Deployment (Collector Only)
+
+The EC2 instance runs the collector every 15 minutes. No dashboard, no open ports needed.
 
 ```bash
 # On your EC2 instance:
@@ -60,9 +59,26 @@ cd spotify-library
 bash setup.sh
 ```
 
-This installs systemd services for:
-- **Collector timer**: runs every 30 minutes
-- **Dashboard**: Streamlit on port 8501
+Copy your token cache from your Mac:
+```bash
+scp .spotify_token_cache user@ec2-host:~/spotify-library/
+```
+
+## Local Dashboard
+
+Sync the database from EC2 and launch the dashboard on your Mac:
+
+```bash
+bash sync-db.sh user@ec2-host
+```
+
+Or set the host once and forget:
+```bash
+export SPOTIFY_EC2_HOST=user@ec2-host
+bash sync-db.sh
+```
+
+This copies the DB (~5MB) and opens Streamlit locally.
 
 ## Stats CLI Commands
 

@@ -24,8 +24,8 @@ if [ ! -d ".venv" ]; then
     python3 -m venv .venv
 fi
 
-echo "Installing dependencies..."
-.venv/bin/pip install -q -r requirements.txt
+echo "Installing dependencies (collector only, no dashboard deps)..."
+.venv/bin/pip install -q spotipy python-dotenv
 
 # .env setup
 if [ ! -f ".env" ]; then
@@ -79,47 +79,25 @@ EOF
 
 sudo tee /etc/systemd/system/spotify-collector.timer > /dev/null <<EOF
 [Unit]
-Description=Run Spotify collector every 30 minutes
+Description=Run Spotify collector every 15 minutes
 
 [Timer]
 OnBootSec=60
-OnUnitActiveSec=30min
+OnUnitActiveSec=15min
 Persistent=true
 
 [Install]
 WantedBy=timers.target
 EOF
 
-sudo tee /etc/systemd/system/spotify-dashboard.service > /dev/null <<EOF
-[Unit]
-Description=Spotify listening history dashboard
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=simple
-User=$(whoami)
-WorkingDirectory=$PROJECT_DIR
-ExecStart=$PROJECT_DIR/.venv/bin/streamlit run src/dashboard.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
-Environment=HOME=$HOME
-Restart=on-failure
-RestartSec=10
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
 sudo systemctl daemon-reload
 sudo systemctl enable --now spotify-collector.timer
-sudo systemctl enable --now spotify-dashboard
 
 echo ""
 echo "=== Setup complete ==="
 echo ""
-echo "Services:"
-echo "  Collector timer: systemctl status spotify-collector.timer"
-echo "  Dashboard:       systemctl status spotify-dashboard"
-echo "  Dashboard URL:   http://$(curl -s ifconfig.me 2>/dev/null || echo 'YOUR_IP'):8501"
+echo "Collector timer: systemctl status spotify-collector.timer"
+echo "Run initial collection: .venv/bin/python src/collector.py"
 echo ""
-echo "Run initial collection:"
-echo "  .venv/bin/python src/collector.py"
+echo "To view the dashboard, sync the DB to your Mac:"
+echo "  scp $(whoami)@\$(curl -s ifconfig.me):$PROJECT_DIR/data/spotify.db local-path/data/spotify.db"
