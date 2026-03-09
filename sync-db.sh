@@ -13,7 +13,7 @@ if [ -z "$EC2_HOST" ]; then
     exit 1
 fi
 
-REMOTE_DB="~/spotify-library/data/spotify.db"
+REMOTE_DB="~/spotify-history/data/spotify.db"
 
 echo "Syncing database from $EC2_HOST..."
 mkdir -p "$SCRIPT_DIR/data"

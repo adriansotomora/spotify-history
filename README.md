@@ -22,8 +22,8 @@ Local Mac (on-demand):
 ## Quick Start (Local)
 
 ```bash
-git clone https://github.com/adriansotomora/spotify-library.git
-cd spotify-library
+git clone https://github.com/adriansotomora/spotify-history.git
+cd spotify-history
 
 python3 -m venv .venv
 source .venv/bin/activate
@@ -54,14 +54,14 @@ The EC2 instance runs the collector every 15 minutes. No dashboard, no open port
 
 ```bash
 # On your EC2 instance:
-git clone https://github.com/adriansotomora/spotify-library.git
-cd spotify-library
+git clone https://github.com/adriansotomora/spotify-history.git
+cd spotify-history
 bash setup.sh
 ```
 
 Copy your token cache from your Mac:
 ```bash
-scp .spotify_token_cache user@ec2-host:~/spotify-library/
+scp .spotify_token_cache user@ec2-host:~/spotify-history/
 ```
 
 ## Local Dashboard
