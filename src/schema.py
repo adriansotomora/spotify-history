@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS daily_summary (
 """
 
 
-def init_db(db_path: Path | None = None) -> sqlite3.Connection:
+def init_db(db_path=None) -> sqlite3.Connection:
     """Create all tables and return a connection with WAL mode enabled."""
     db = db_path or DB_PATH
     db.parent.mkdir(parents=True, exist_ok=True)

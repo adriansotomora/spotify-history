@@ -12,7 +12,7 @@ from schema import DB_PATH, init_db
 from pipeline import run_pipeline
 
 
-def collect(db_path: Path | None = None):
+def collect(db_path=None):
     """Fetch recent plays and insert new ones into raw_plays (bronze)."""
     sp = get_spotify_client()
     conn = init_db(db_path)

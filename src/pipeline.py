@@ -175,7 +175,7 @@ def silver_to_gold(conn):
     conn.commit()
 
 
-def run_pipeline(db_path: Path | None = None):
+def run_pipeline(db_path=None):
     """Run the full ETL pipeline."""
     conn = init_db(db_path)
     bronze_to_silver(conn)
