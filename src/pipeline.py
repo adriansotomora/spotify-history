@@ -92,7 +92,7 @@ def backfill_skip_detection(conn):
         gap_ms = int((t2 - t1).total_seconds() * 1000)
         listened_ms = min(gap_ms, duration_ms * 2) if duration_ms else gap_ms
         completion = min(listened_ms / duration_ms, 1.0) if duration_ms and duration_ms > 0 else None
-        skipped = 1 if completion is not None and completion < 0.8 else 0
+        skipped = 1 if completion is not None and completion < 0.6 else 0
 
         conn.execute("""
             UPDATE plays SET listened_ms = ?, completion_pct = ?, skipped = ?
