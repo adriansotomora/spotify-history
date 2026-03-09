@@ -95,4 +95,4 @@ This copies the DB (~5MB) and opens Streamlit locally.
 
 ## Skip Detection
 
-The pipeline infers skips by comparing the time gap between consecutive plays with each track's duration. A play with < 80% completion is flagged as skipped.
+The pipeline infers skips by comparing the time gap between consecutive plays with each track's duration. A play with < 60% completion is flagged as skipped.
