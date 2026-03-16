@@ -1,0 +1,15 @@
+[Unit]
+Description=Spotify Dashboard
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/home/ec2-user/spotify-history
+ExecStart=/home/ec2-user/spotify-history/.venv/bin/streamlit run src/dashboard.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
